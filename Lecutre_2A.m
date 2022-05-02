@@ -46,16 +46,29 @@ imshow(median_filtered)
 title('b) Median Filter Application')
 
 %% Normalized Correlation
+clc;clear;
+
 s = [-1 0 0 1 1 1 0 -1 -1 0 1 0 0 -1];
 t = [1 1 0];
 disp('Signal:'), disp([1:size(s, 2); s]);
 disp('Template:'), disp([1:size(t, 2); t]);
 
-s_size = length(s);
-corr  = [];
-for i = 1:s_size-2
-    corr = [corr,s(i)*t(1) + s(i+1)*t(2) + s(i+2)*t(3)];
-end
-disp(corr)
+% Direct Method
+corr = normxcorr2(t,s);
+[max_value, max_index] = max(corr);
+index = max_index - size(t,2) +1;
+disp('Index:'), disp(index);
 
-normxcorr2(t,s)
+% Manually Calculation
+corr = [];
+for i = 1:size(s,2)-2
+    s_ = (s(i)+s(i+1)+s(i+2))/3;
+    s1 = s(i) - s_;
+    s2 = s(i+1) - s_;
+    s3 = s(i+2) - s_;
+    coeff = (s1*t(1) + s2*t(2) + s3*t(3))/sqrt(2/3*(s1^2+s2^2+s3^2));
+    corr(end+1) = coeff;
+end
+[max_value, max_index] = max(corr);
+index = max_index;
+disp('Index:'), disp(index);
